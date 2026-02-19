@@ -20,14 +20,14 @@ It has the following features:
 
 # Installation
 
-## A Linux Work Environment
-You need a Linux distribution. 
-I use Ubuntu 22.04.3 LTS.
-On Windows, you can install it from WSL2.
-You find resources on the internet on how to install WSL2 and Ubuntu.
+## Programs 
+You need a **text editor**, like Visual Studio Code. 
+You further need **Inkscape** for editing and converting svg graphics.
+WSL users can use either the Windows version of those programs or the Linux version.
+We lean towards the Windows version. 
 
-## Install Linux Packages 
-You need the following packages in your Linux distribution:
+## Dependencies
+To use our template, following packages are required:
 - ```make``` for building various artifacts
 - ```pdflatex``` as latex compiler
 - ```bibtex``` for the bibliography
@@ -35,7 +35,15 @@ You need the following packages in your Linux distribution:
 - ```texlive-full``` as your Latex Environment
 - ```evince``` for viewing the document and figures.
 
-To install them on Ubuntu 22.04.3 LTS, open a bash and type
+## Windows Installation
+On Windows, you can use WSL2 or a virtual machine (VM).
+We recommend using WSL2. 
+You find resources on the internet on how to install WSL2 and Ubuntu on a machine running Windows.
+After installing WSL2 or getting a Linux-VM up and running, you can proceed with [Linux Installation section](#linux-installation).
+
+## Linux Installation
+We tested our template on a machine running Ubuntu 22.04.3 LTS.
+To install dependencies on the above mentioned distro, open a terminal and type
 ```
 sudo apt update
 sudo apt install make inkscape texlive-full evince 
@@ -45,11 +53,29 @@ You can get away with a much smaller installation if you use the so-hier-method 
 Type ```make```, see what is missing, and install the missing packages. 
 Then repeat until you get no more error messages.
 
-## Programs 
-You need a **text editor**, like Visual Studio Code. 
-You further need **inkscape** for editing and converting svg graphics.
-WSL users can use either the Windows version of those programs or the Linux version.
-I lean towards the Windows version. 
+## Mac Installation
+On Mac, you can use [Homwbrew](https://brew.sh/) to install the dependencies needed.
+
+To install ```make```, use the following command:
+```
+brew install make
+```
+
+To install ```pdflatex```, ```bibtex```, and ```texlive-full``` (for more information on this step, you can refer to [ this thread on stackexchange](https://tex.stackexchange.com/questions/642248/i-have-installed-mactex-because-i-need-pdflatex-but-it-looks-like-not-open)), first use the following command:
+```
+brew uninstall mactex
+```
+Then download and install the [```MacTex.pkg```](https://www.tug.org/mactex/mactex-download.html) manually.
+
+To install ```inkscape```, you can use the following command:
+```
+brew install inkscape
+```
+
+To install ```evince```, you can use the following command:
+```
+brew install evince
+```
 
 # User Guide
 

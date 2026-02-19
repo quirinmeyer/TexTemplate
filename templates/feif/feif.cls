@@ -369,7 +369,7 @@
           {
             \centering
             \ifgerman{
-              \includegraphics[width=.8\textwidth]{logo_hscoburg_de_rot.pdfpages}%
+              \includegraphics[width=.8\textwidth]{logo_hscoburg_de_rot.pdf}%
             }
             {
               \includegraphics[width=.8\textwidth]{logo_hscoburg_en_rot.pdf}%
@@ -461,6 +461,14 @@
   \pagenumbering{arabic}
 }
 
+\newcommand\contents
+{
+  \clearpage
+  \phantomsection
+  \addcontentsline{toc}{section}{\contentsname}
+  \tableofcontents
+}
+
 % Backmatter
 \newcommand\backmatter
 {
@@ -474,7 +482,8 @@
 \let\oldlistoffigures\listoffigures
 \renewcommand{\listoffigures}
 {
-    \iftotalfigures
+  \iftotalfigures
+        \clearpage
         \phantomsection
         \addcontentsline{toc}{section}{\listfigurename}
         \oldlistoffigures
@@ -485,7 +494,8 @@
 \let\oldlistoftables\listoftables
 \renewcommand{\listoftables}
 {
-    \iftotaltables
+  \iftotaltables
+        \clearpage
         \phantomsection
         \addcontentsline{toc}{section}{\listtablename}
         \oldlistoftables
@@ -521,11 +531,10 @@
 {    
   \IfFileExists{\FEIFCountEntriesFileName}{\input{\FEIFCountEntriesFileName}}{}
   \ifdefined\AcronymsUsed
-      \ifnum\AcronymsUsed=1    
+      \ifnum\AcronymsUsed=1
         \clearpage
         \setglossarystyle{super}
         \printglossary[type=\acronymtype]
-  
       \fi 
   \fi
 }
@@ -564,7 +573,8 @@
   \pagestyle{fancy}
   \fancypagestyle{abstract}{\fancyhead[L]{\abstractname}}
   \thispagestyle{abstract}
-  \section*{\abstractname} 
+  \section*{\abstractname}
+  \phantomsection
   \addcontentsline{toc}{section}{\abstractname}
 }
 {  
@@ -577,7 +587,8 @@
   \pagestyle{fancy}
   \clearpage
   \fancypagestyle{acknowledgement}{\fancyhead[L]{\acknowledgementname}}
-  \thispagestyle{acknowledgement}  
+  \thispagestyle{acknowledgement}
+  \phantomsection
   \addcontentsline{toc}{section}{\acknowledgementname}
 }
 {  
