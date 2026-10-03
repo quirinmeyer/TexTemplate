@@ -21,6 +21,8 @@ It has the following features:
 - Consistent references with cleveref ("Sec. 3", "Eq. (4)").
 - Packages for copy-editors and arXiv that build without Inkscape.
 - GitHub workflow that builds the pdfs on every push and publishes them as releases.
+- A style guide for writing papers, see [STYLEGUIDE.md](STYLEGUIDE.md).
+- A short sample paper that follows the style guide, with a test bed for the template in its appendix.
 
 # Installation
 
@@ -133,11 +135,25 @@ Therefore, open the file ```template/main.tex``` and set all the information acc
 In the folder ```secs```, you can place your LaTeX text content.
 Typically, those are the sections or chapters of your document.
 You can order them in the ```secs/structure.tex``` file and use the LaTeX ```\input``` command.
+The appendix goes into ```secs/appendix.tex```, which ```template/main.tex``` inputs where the venue wants it, e.g., after the bibliography for EG and ACM.
 
 ### Teaser and Abstract
 An exception are ```A0abstract.tex``` and ```A0teaser.tex```.
 The ```template/main.tex``` inputs them appropriately.
 Therefore, you must name them ```A0abstract.tex``` and ```A0teaser.tex```, otherwise the template will not find them.
+
+### Sample Paper
+The template comes with a short sample paper, "How Wrong Is Affine Texture Mapping?".
+It shows [STYLEGUIDE.md](STYLEGUIDE.md) at work:
+an SVG teaser with embedded renderings (```figs/teaser.svg```),
+a TikZ figure (```figs/edge_diagram.tex```),
+plots from CSV data (```figs/error_plots.tex```, ```figs/data```),
+a generated table (```tabs/subdivision.tex```),
+a code listing (```codes/interpolation.tex```),
+and supplemental material.
+The script ```scripts/sample_paper.py``` renders the images and writes the data and the table; it needs numpy, Pillow, and matplotlib.
+The appendix holds the list of symbols and a test bed (```secs/D1TestBed.tex```) for fonts, page layout, acronyms, and figures.
+Replace the sample by your paper, but keep the test bed as long as you change the template.
 
 ### Common
 
@@ -198,7 +214,7 @@ To access the files from Windows, enter ```\\WSL$\``` in the address path of you
 
 If the root folder contains ```supplemental.tex``` and the selected template contains ```supplemental.tex```, ```make``` also builds ```build/<OUTPUT_FILE>_Supplemental.pdf```.
 Write its content in ```secs/S0supplemental.tex```.
-The supplemental reads the labels of the paper with the ```xr``` package, so ```\cref{Sec:MainPart}``` in the supplemental shows the section number of the paper.
+The supplemental reads the labels of the paper with the ```xr``` package, so ```\cref{eq:MaxError}``` in the supplemental shows the equation number of the paper.
 The supplemental has its own bibliography; keep at least one citation in it, since BibTeX fails on an empty bibliography.
 Write ```\SupplementalName``` where the paper refers to the supplemental material: it reads "supplemental material", or "appendix" in the arXiv version.
 Delete ```supplemental.tex``` if you do not need a supplemental.
@@ -257,7 +273,7 @@ The disadvantage is that the text placement can be cumbersome at times, but see 
 
 To include them in your document use
 ```
-\includesvg{figs/figure.pdf_tex}f
+\includesvg{figs/figure}
 ```
 
 #### Interactive Preview
@@ -404,86 +420,9 @@ which requires the GitHub CLI ```gh```.
 
 # Style Guide
 
-## Rules
-
-### Formatting
-1. For better merging, use a line-break after period.            
-    
-1. Use correct punctuation also with line equations.
-
-1. Avoid abbreviations.
-
-1. Use the acronym package.
-
-### Common Abbreviations
-- et al.,
-- e.g.,
-- i.e.,
-- \cref{} instead of Fig.~\ref{}, Tab.~\ref{}, Sec.~\ref{}, and Eq.~\eqref{}
-
-### Figures
-1. Use vector graphics
-1. Use Latex commands directly in Inkscape text boxes.
-1. Use templates
-    - use its shown line widths, only.
-    - use its shown colors, only.
-    - use its arrow caps, only.
-    - use its dashes, only.
-1. Avoid transparency.
-1. Place screenshots in svgs.
-       
-### Bibliography & Citation
-1. Place copies of PDFs in the Bibliography folder.
-
-    Reason: We want to be able to quickly access them.
-    
-1. Use the following LaTeX citation keys:
-
-    `auth(0,1).capitalize+shortyear+shorttitle(3,3).abbr`
-    
-    - `auth(0,1).capitalize`:       Capitalized family name of the first author    
-    - `shortyear`:                  Last to digits of the year
-    - `shorttitle(3,3).abbr`        Take the first letters of the first three significant words of the title.
-
-    Example:
-    
-    **Unterguggenberger, J., Kerbl, B., Pernsteiner, J. Wimmer, M.**, 2021, *Conservative Meshlet Bounds for Robust Culling of Skinned Meshes*
-    
-    We use Unterguggenberger21CMB.
-
-    
-1. Never use a reference as a noun!
-
-    Do not write
-    
-    `As suggested by~\cite{Unterguggenberger21CMB}, ...`,
-    
-    but write
-    
-    
-    - `Meslets are used for skinned meshes~\cite{Unterguggenberger21CMB}.`; or
-    - `Unterguggenberger et al.~\cite{Unterguggenberger21CMB} use Meshlets, too.`,
-    
-    instead.
-    
-    
-### Assets
-1. When using screenshots of an asset, use the following process
-
-    1. Create an `Asset` folder.
-    1. Create a separate folder for the asset inside the `Asset` folder.
-    1. In that folder include
-        - A text `AssetInformation.txt` file stating 
-            - The author of the asset
-            - Author contact information
-            - the source (e.g., URL) 
-            - the date when you obtained it
-            - the name of the person who obtained it
-        - The license file.
-        - A a screenshot showing the model and license from the source from the asset was obtained.
-1. Prefer Creaative Common files if possible.
-1. Do not use the following models
-    1. "Lenna": IEEE, Taylor & Francis,  and Nature Publishing Group are examples of publishers disallowing or discouraging the use of this image.
+[STYLEGUIDE.md](STYLEGUIDE.md) describes how we write papers and theses:
+language, acronyms, structure, mathematics, figures, captions, tables, code, references, citation keys, assets, and a checklist before you hand in a draft.
+The sample paper in ```secs/``` follows it.
 
 # History
 I have always been using LaTeX to create my computer graphics research papers. 

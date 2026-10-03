@@ -68,7 +68,12 @@
 \listofsymbols
 \listofacronyms  
 \mainmatter
+% The text refers to the teaser of the sample paper; here, it is a regular figure.
+\begin{figure}[t]
+    \input{./secs/A0teaser.tex}
+\end{figure}
 \input{secs/structure.tex}
+\input{secs/appendix.tex}
 \backmatter  
 \IfExists{./secs/C0ack}{\begin{acknowledgement}\input{./secs/C0ack}\end{acknowledgement}}
 \printfeifglossary   

@@ -1,0 +1,93 @@
+% Test bed of the template. After changing the template, the packages, or the commands, check
+% here that fonts, page layout, acronyms, and figures still work. Remove this section and its
+% \input in secs/appendix.tex from your paper.
+\section{Test Bed}\label{sec:TestBed}
+This appendix tests the fonts, the page layout, the acronyms, and the figures of the template.
+
+\subsection{Fonts}
+Each line uses a different font, with the old font commands that some classes still use.
+
+\noindent Waltz, bad nymph, for quick jigs vex.
+
+\noindent{\rm{Waltz, bad nymph, for quick jigs vex.}}
+
+\noindent{\sf{Waltz, bad nymph, for quick jigs vex.}}
+
+\noindent{\tt{Waltz, bad nymph, for quick jigs vex.}}
+
+\noindent{\bf{Waltz, bad nymph, for quick jigs vex.}}
+
+\noindent{\it{Waltz, bad nymph, for quick jigs vex.}}
+
+\noindent{\sl{Waltz, bad nymph, for quick jigs vex.}}
+
+\noindent{\sc{Waltz, bad nymph, for quick jigs vex.}}
+
+\noindent Math: $a$, $\alpha$, $\vect{a}$, $\nvec{a}$, $\pnt{a}$, $\mat{A}$, $\quat{a}$, $a_k$, $a_\mathrm{max}$, $\nreal^3$.
+
+\noindent Numbers: \num{1152}, \num{0.444}, \textbf{\num{0.444}}, \qty{4.5}{\milli\second}, \qty{12}{\percent}.
+
+\subsection{Page Layout}
+The text is \the\textwidth{} wide, and a column is \the\columnwidth{} wide.
+Draw figures at these widths.
+\Cref{fig:TestLayout} shows the layout of a page with all its lengths.
+
+\begin{figure*}[p]
+    \centering
+    % \layout draws the page at half its size and lists its lengths. Here, it draws one page
+    % only, and it neither ends the page nor changes its style.
+    {\csname @twosidefalse\endcsname
+     \renewcommand{\newpage}{}%
+     \renewcommand{\thispagestyle}[1]{}%
+     \layout}
+    % The table of lengths below the drawing has zero height; make room for it.
+    \vspace{80pt}
+    \caption{\captiontitle{Page Layout}
+        The page at half its size with the lengths of the template.
+    }
+    \label{fig:TestLayout}
+\end{figure*}
+
+\subsection{Acronyms}
+% \glsreset makes the next \ac the first use again.
+\glsreset{GPU}
+The first time, we use a \ac{GPU}.
+Next time, we use a \ac{GPU}.
+Now, we even have multiple \acp{GPU}.
+In headings and captions, write \acs{GPU}.
+
+\subsection{Figures}
+\Cref{fig:TestLatexText,fig:TestInkscapeText} include an SVG figure with two options of \texttt{\textbackslash includesvg}:
+\begin{itemize}
+    \item \texttt{inkscapelatex=true}, the default: \LaTeX{} typesets the text.
+    \item \texttt{inkscapelatex=false}: Inkscape renders the text with the fonts of the SVG file.
+\end{itemize}
+\Cref{fig:TestRaster} includes a PNG file directly.
+
+\begin{figure}[t]
+    \centering
+    \includesvg[width=\columnwidth, inkscapelatex=true]{figs/PDFTexFigure}
+    \caption{\captiontitle{Text Typeset by \LaTeX}
+        \LaTeX{} typesets the text of the SVG, so fonts and math match the paper.
+    }
+    \label{fig:TestLatexText}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includesvg[width=\columnwidth, inkscapelatex=false]{figs/SVGFigure}
+    \caption{\captiontitle{Text Rendered by Inkscape}
+        The fonts come from the SVG file.
+        Avoid this in papers.
+    }
+    \label{fig:TestInkscapeText}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.5\columnwidth]{imgs/checkerboard.png}
+    \caption{\captiontitle{Raster Image}
+        The texture of \cref{fig:Teaser} with $256\times256$ texels as a PNG file.
+    }
+    \label{fig:TestRaster}
+\end{figure}

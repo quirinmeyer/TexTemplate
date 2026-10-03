@@ -5,6 +5,9 @@
 \def\input@path{{./download/egPublStyle-cgf/}}
 \makeatother
 \documentclass{download/egPublStyle-cgf/egpubl}
+% egpubl does not set the paper size, which hyperref needs.
+\setlength{\paperwidth}{210mm}
+\setlength{\paperheight}{297mm}
 \SpecialIssuePaper
 \CGFStandardLicense
 \usepackage[T1]{fontenc}
@@ -17,9 +20,11 @@
 \usepackage{egweblnk}
 \input{common/packages.tex}
 \input{common/commands.tex}
+% Table captions below the table, as in our EG papers (see STYLEGUIDE.md, "Captions").
+\captionsetup{tableposition=bottom}
 \graphicspath{{./}, {../figs}, {./download/egPublStyle-cgf/}}
 
-% Labels of the paper (e.g., \cref{Sec:MainPart}) come from its .aux file.
+% Labels of the paper (e.g., \cref{eq:MaxError}) come from its .aux file.
 % The Makefile defines \PaperAux from OUTPUT_FILE; the fallback is for building by hand.
 \usepackage{xr}
 \providecommand{\PaperAux}{build/Paper1024}
@@ -27,6 +32,8 @@
 % and citations imported by xr break hyperref's citation links (undefined \XR@prefix).
 \makeatletter
 {\let\bibcite\@gobbletwo\externaldocument{\PaperAux}}
+% Both documents define the label LastPage; keep only the one of the supplemental.
+\global\expandafter\let\csname r@LastPage\endcsname\relax
 \makeatother
 
 \ifthenelse{\equal{\BlindSubmission}{1}}
@@ -34,13 +41,13 @@
     \author[Paper 1024]{\parbox{\textwidth}{\centering Paper 1024}}
 }
 {
-    \author[Meyer]{\parbox{\textwidth}{\centering Quirin Meyer}}
+    \author[Q. Meyer]{\parbox{\textwidth}{\centering Quirin Meyer}}
 }
 \glsdisablehyper
 \makeglossaries
 \input{lists/acronyms.tex}
 
-\title{The History of \Acsp{GPU}\\Supplemental Material}
+\title{How Wrong Is Affine Texture Mapping?\texorpdfstring{\\}{ }Supplemental Material}
 \begin{document}
 \maketitle
 \input{secs/S0supplemental.tex}

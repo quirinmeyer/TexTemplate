@@ -36,10 +36,34 @@
 \DeclareOldFontCommand{\sl}{\normalfont\slshape}{\@nomath\sl}
 \DeclareOldFontCommand{\sc}{\normalfont\scshape}{\@nomath\sc}
 
-\newcommand{\nvec}[1]{\hat{#1}}
-\newcommand{\mat}[1]{\mathbf{#1}}
-\newcommand{\quat}[1]{\underline{#1}}
-\newcommand{\pnt}[1]{\mathbf{#1}}
+% Never hyphenate monospaced text, such as identifiers and file names in \texttt. Some font
+% definitions allow it, e.g., the Courier of the EG template ("script-s/").
+\makeatletter
+\AtBeginDocument{{\ttfamily\hyphenchar\font=\m@ne
+  \expandafter\DeclareFontFamily\expandafter{\f@encoding}{\f@family}{\hyphenchar\font=\m@ne}}}
+\makeatother
+
+% Notation (see STYLEGUIDE.md, "Mathematics"): write what an object is, not how it looks.
+% To change the notation of a paper, change it here, e.g., \mathbf{#1} for bold vectors.
+\newcommand{\vect}[1]{\vec{#1}}         % vector
+\newcommand{\nvec}[1]{\hat{#1}}         % normalized vector
+\newcommand{\mat}[1]{\mathbf{#1}}       % matrix
+\newcommand{\quat}[1]{\underline{#1}}   % quaternion
+\newcommand{\pnt}[1]{\mathbf{#1}}       % point
+
+% Colors of tools/inkscape/PaperPalette.gpl, so that TikZ, pgfplots, and Inkscape figures match.
+\definecolor{PaletteBlue}{RGB}{47,114,255}
+\definecolor{PaletteDarkBlue}{RGB}{0,44,137}
+\definecolor{PaletteOrange}{RGB}{255,105,0}
+\definecolor{PaletteGray}{RGB}{127,127,127}
+
+% Semantic markup for text (see STYLEGUIDE.md): the look is decided here, once per venue.
+% \term{atlas}: introduces a technical term where the text defines it.
+\newcommand{\term}[1]{\emph{#1}}
+% \captiontitle{Test Meshes}: the title at the start of every caption; adds the period.
+% If the venue sets captions in italics (e.g., the final CGF layout), \emph prints the title
+% upright; use \textbf{#1.} there.
+\newcommand{\captiontitle}[1]{\emph{#1.}}
 
 % Where the supplemental material is: the separate supplemental.tex, or the appendix of the
 % arXiv version, whose main file (make arxiv) defines this name first.

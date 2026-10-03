@@ -1,59 +1,36 @@
-\begin{tblr}{ll}
+% The notation (top) and the symbols of the paper (bottom); see STYLEGUIDE.md, "Mathematics".
+% This paper never uses the components of a vector. So, unlike our default notation, a subscript
+% numbers the elements of a series, e.g., the vertices of a triangle.
+\begin{tblr}{colspec={lX[l]}, width=\linewidth}
     \toprule
-    \SetCell[c=2]{c}Variables used in this paper\\
+    \textbf{Symbol}                 & \textbf{Meaning} \\
     \midrule
-    \bf{Symbol}               & \bf{Meaning}\\
+    \SetCell[c=2]{l}\textit{Notation} \\
+    $a$, $\alpha$                   & scalar \\
+    $\vect{a}$                      & column vector \\
+    $\pnt{a}$                       & point \\
+    $a_k$, $\vect{a}_k$, $\pnt{a}_k$ & $k$-th element of a series \\
+    $\Vert \vect{a} \Vert$          & Euclidean norm \\
+    $\vect{a}^\top$                 & transpose \\
     \midrule
-    $\mat{M}$                 & model-view matrix \\
-    $\mat{P}$                 & projection matrix \\
-    $\nvec{n}$                & a normal vector \\
-    $V$                       & number of vertices \\    
-    $T$                       & number of triangles \\    
-    $\vec{l}$                 & light direction vector \\
-    $\pnt{x}$                 & point to be lit \\
+    \SetCell[c=2]{l}\textit{Interpolation, \cref{sec:PerspectiveCorrect}} \\
+    $\pnt{p}_k$                     & vertex $k \in \{0, 1, 2\}$ of a triangle in camera space \\
+    $\vect{u}_k$                    & texture coordinates of $\pnt{p}_k$ [texels] \\
+    $x_k, y_k, z_k, w_k$            & homogeneous coordinates of $\pnt{p}_k$ after the projection; $w_k$ is the depth of $\pnt{p}_k$ \\
+    $\lambda_k$                     & screen-space barycentric coordinates of a pixel \\
+    $\vect{u}_\mathrm{aff}$         & affinely interpolated texture coordinates \\
+    $\vect{u}$                      & perspective-correct texture coordinates \\
+    $\mu_k$                         & weights of perspective-correct interpolation \\
+    \midrule
+    \SetCell[c=2]{l}\textit{Edge and subdivision, \cref{sec:EdgeError,sec:Subdivision}} \\
+    $t$                             & position of a pixel on an edge in screen space \\
+    $s$                             & position of the point that the pixel shows on the edge \\
+    $r$                             & depth ratio of an edge, $r = w_1 / w_0 \ge 1$ \\
+    $\ell$                          & length of an edge in the texture [texels] \\
+    $\delta(t)$                     & error along an edge as a fraction of $\ell$ \\
+    $\delta_\mathrm{max}$, $t^\ast$ & maximum of $\delta$ and its position \\
+    $n$                             & number of pieces per edge \\
+    $E_n$                           & largest error after subdivision [texels] \\
+    $\varepsilon$                   & error threshold [texels] \\
     \bottomrule
-    \toprule
-    \SetCell[c=2]{c}{Types used in this paper}\\
-    \midrule
-    \bf{Notation}               & \bf{Meaning}\\
-    \midrule
-    $a$                         & scalar\\
-    $N$                         & scalar constant\\
-    $\alpha$                    & angle\\
-    $\vec{x}$                   & column vector\\
-    ${x}_i$                     & vector component\\
-    $\nvec{x}$                  & normalized vector \\
-    $\vec{x}=
-    \begin{bmatrix}
-        {x}_0\\
-        {x}_2\\
-        \vdots\\
-        {x}_{m-1}
-    \end{bmatrix}$              & column vector\\
-    $\mat{A}=
-    \begin{bmatrix}
-        a_{0,0}   & a_{0,1}   & \dots  &  a_{0,m-1}   \\
-        a_{1,0}   & a_{1,1}   & \dots  &  a_{1,m-1}   \\
-        \vdots    & \vdots    & \ddots &  \vdots      \\
-        a_{n-1,0} & a_{n-1,1} & \dots  &  a_{n-1,m-1} \\
-    \end{bmatrix}
-    $                          & matrix \\
-    $\vec{a}_{:,j}$             & $j$-th column of matrix $\mat{A}$\\
-    ${a}_{i,j}$                 & element at row $i$, column $j$\\
-    $\quat{q}$                  & quaternion \\
-    $\pnt{p}$                   & point \\
-    $s_i$                       & $i$-th element of a series of scalars\\
-    $\vec{x}^{\left[i\right]}$  & $i$-th element of a series of vectors\\
-    $\mat{A}^{\left[i\right]}$  & $i$-th element of a series of matrices\\
-    $\mathcal{A}$               & set\\
-    \bottomrule                                    
-    \toprule
-    \SetCell[c=2]{c}{Operators used in this paper}\\
-    \midrule
-    \bf{Operation}       & \bf{Meaning}\\
-    \midrule
-    $\vec{a}^\top$           & transpose, row vector \\
-    $\vec{a}^\top\vec{b}$    & inner product \\
-    $\vec{a} \times \vec{b}$ & cross product \\    
-    \bottomrule                                    
 \end{tblr}

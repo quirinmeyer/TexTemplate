@@ -1,0 +1,28 @@
+% Side view of an edge on the floor of the teaser (Sec. 3.2): the camera sits at the origin,
+% the depth grows to the right. TikZ computes the exact geometry from the formulas of the paper.
+\begin{tikzpicture}[x=16mm, y=22mm, >=stealth]
+    \pgfmathsetmacro{\ratio}{4}      % depth ratio r with the depths w_0 = 1 and w_1 = r
+    \pgfmathsetmacro{\screen}{0.8}   % depth of the screen
+    \draw[->, PaletteGray] (0, 0) -- (4.35, 0) node[above left, black] {depth};
+    \draw[PaletteGray, line width=1pt] (\screen, -0.95) -- (\screen, 0.12) node[above, black] {screen};
+    \draw[line width=1pt] (1, -1) -- (\ratio, -1);
+    % Rays through equal steps of t on the screen (black) hit the edge at s (blue);
+    % affine interpolation assumes s = t (orange).
+    \foreach \t in {0, 0.25, 0.5, 0.75, 1} {
+        \pgfmathsetmacro{\s}{\t / (\ratio - (\ratio - 1) * \t)}
+        \draw[PaletteGray] (0, 0) -- ({1 + (\ratio - 1) * \s}, -1);
+        \fill (\screen, {-\screen * (1 - (1 - 1 / \ratio) * \t)}) circle (1pt);
+        \fill[PaletteOrange] ({1 + (\ratio - 1) * \t}, -1) circle (1.6pt);
+        \fill[PaletteBlue] ({1 + (\ratio - 1) * \s}, -1) circle (1.6pt);
+    }
+    \fill (0, 0) circle (1.5pt) node[above] {camera};
+    \node[anchor=north east] at (\screen - 0.02, -0.82) {$t = 0$};
+    \node[anchor=south west] at (\screen + 0.02, -0.17) {$t = 1$};
+    \node[below] at (1, -1) {$\pnt{p}_0$};
+    \node[below] at (\ratio, -1) {$\pnt{p}_1$};
+    % The error at t = 1/2.
+    \pgfmathsetmacro{\shalf}{0.5 / (\ratio - (\ratio - 1) * 0.5)}
+    \draw[decorate, decoration={brace, mirror, amplitude=3pt}]
+        ({1 + (\ratio - 1) * \shalf}, -1.06) -- ({1 + (\ratio - 1) * 0.5}, -1.06)
+        node[midway, below=3pt] {$\delta(\tfrac{1}{2})$};
+\end{tikzpicture}

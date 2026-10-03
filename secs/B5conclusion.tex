@@ -1,2 +1,11 @@
-\section{Conclusion and Future Work}\label{Sec:ConclusionAndFutureWork}
-\lipsum[1-16]
+\section{Limitations and Future Work}\label{sec:Limitations}
+We analyze the error of the texture coordinates, not of the colors.
+Filtering, e.g., with mipmaps~\cite{Williams83PP}, blurs the texture and may hide part of the error.
+That the error inside a triangle stays below the error along its edges rests on experiments, not on a proof.
+Our pieces have equal lengths.
+Pieces at depths in geometric progression all have the same depth ratio and may need fewer triangles.
+
+\section{Conclusion}\label{sec:Conclusion}
+Affine texture mapping is off by up to $(\sqrt{r} - 1)/(\sqrt{r} + 1)$ of an edge whose endpoints have the depth ratio $r$.
+Subdividing the edge into $n$ pieces reduces the error quadratically in $n$.
+\Cref{eq:Pieces} tells how finely to subdivide a surface to keep the error below a threshold.

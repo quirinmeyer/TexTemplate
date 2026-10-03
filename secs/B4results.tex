@@ -1,73 +1,55 @@
-\section{Results and Discussion}\label{Sec:Evaluation}
+\section{Results and Discussion}\label{sec:Results}
+We describe our setup (\cref{sec:Setup}), compare our predictions with measurements (\cref{sec:Measurements}), and discuss the costs of subdivision (\cref{sec:Discussion}).
 
-We evaluate the performance of our methods on the meshes of Fig.~\ref{fig:meshes}.
-    
-\begin{figure}
-    %\def\svgwidth{\textwidth}%
-    \includesvg[width=\columnwidth, inkscapelatex=false]{figs/Sketch}%
-\end{figure}
+\subsection{Setup}\label{sec:Setup}
+Our rasterizer follows \cref{lst:Interpolation} and computes in double precision.
+It renders $960\times400$ pixels and compares affine with perspective-correct texture coordinates at the pixel centers.
+The floor of \cref{fig:Teaser} is 2~units wide and spans the depths from 1 to 4, i.e., $r = 4$.
+Its texture has $256\times256$ texels, so its diagonal has the length $\ell = 362$~texels.
+The script \texttt{scripts/sample\_paper.py} renders all images and writes all data of this paper.
 
-\begin{figure}
-    %\def\svgwidth{\textwidth}%
-    \includegraphics[width=\columnwidth]{imgs/Sketch.jpg}%
-\end{figure}
+\subsection{Predictions and Measurements}\label{sec:Measurements}
+\Cref{fig:Plots}~(a) compares \cref{eq:MaxError} with the measured maximum for floors with depth ratios from 1.25 to 16.
+The measurements stay below the predictions by at most \qty{0.05}{\percent}, since the pixel centers miss the exact maximum.
+The bound $(r - 1)/4$ of \cref{sec:Subdivision} is tight only for small depth ratios.
 
-
-\begin{figure*}
-    \centering%
-    \def\svgwidth{\textwidth}%
-    \fontsize{6pt}{5pt}\selectfont%
-    \includesvg{figs/meshes}%
-    \caption[Test Meshes]{
-    $V$ denotes the number of vertices of the input mesh, $T$ the number of triangles and $M$ the number of meshlets coming from Meshoptimizer.
-    Meshlets are visualized with randomized colors.
-    }\label{fig:meshes}%
-\end{figure*}%
-
-\begin{table}
-    \caption
-    [Comparison for the \textit{Rock} mesh.]
-    {    
-    We compare the optimal Gurobi and SCIP solutions against the sub-optimal stuff.
-    The CPU computation uses one thread per meshlet and was measured on an AMD Ryzen 9 7950X (16C/32T).    
-    }\label{tab:StripifyTable}    
-    {
-    \centering    
-    \input{tabs/stripify_table}
+\begin{figure*}[t]
+    \centering
+    \input{figs/error_plots.tex}
+    \caption{\captiontitle{Predicted and Measured Errors}
+        (a)~The largest error along an edge as a fraction of the edge, over the depth ratio $r$ of its endpoints.
+        (b)~The largest error of the floor of \cref{fig:Teaser} in texels after splitting it into $n\times n$ cells.
+        Solid lines show \cref{eq:MaxError}, dashed lines the bounds of \cref{sec:Subdivision}, and circles our measurements.
     }
+    \label{fig:Plots}
+\end{figure*}
+
+\Cref{tab:Subdivision} and \cref{fig:Plots}~(b) show the largest error after subdividing the floor into $n\times n$ cells.
+Prediction and measurement differ by at most \qty{0.1}{\percent}.
+The error falls quadratically, as \cref{eq:SubdivisionBound} predicts.
+The bound overestimates the error by a factor of 2.25 for $n = 1$ and by \qty{5}{\percent} for $n = 32$.
+As \cref{eq:Pieces} predicts, $24\times24$ cells keep the error below half a texel, while $16\times16$ cells do not.
+
+\begin{table}[t]
+    \centering
+    \input{tabs/subdivision.tex}
+    \caption{\captiontitle{Error After Subdivision}
+        We split the floor of \cref{fig:Teaser} into $n\times n$ cells of two triangles each.
+        Predicted is \cref{eq:MaxError} for the diagonal of a cell next to the camera, bound is \cref{eq:SubdivisionBound}.
+        Bold marks errors below half a texel.
+    }
+    \label{tab:Subdivision}
 \end{table}
 
+\subsection{Discussion}\label{sec:Discussion}
+Subdivision trades triangles for accuracy.
+Half a texel costs \num{1152} instead of two triangles for a single floor.
+By \cref{eq:Pieces}, the number of triangles $2n^2$ grows linearly with the length $\ell$ of an edge in the texture, and thus with the texture resolution.
+With $4096\times4096$ texels, \cref{eq:Pieces} asks for $94\times94$ cells, i.e., \num{17672} triangles.
+Perspective-correct interpolation needs no subdivision; it costs a division per pixel, independent of the texture resolution.
 
-\begin{figure}
-    \includesvg[inkscapelatex=true]{figs/PDFTexFigure}
-    \caption[Vector graphics with fonts rendered by latex]{You can use Latex to render the fonts.}\label{fig:latexfonts}
-\end{figure}
-
-\begin{figure}
-    \includesvg[inkscapelatex=false]{figs/SVGFigure}
-    \caption[Vector graphics with fonts directly taken from the file]{You can also use the fonts produced by the SVG file.}\label{fig:svgfonts}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=\columnwidth]{imgs/img.png}
-    \caption[Pixel graphics]{You can also directly include pixel graphics.}\label{fig:pixel}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includesvg[width=\columnwidth, inkscapelatex=false]{figs/SVGFromPowerPoint}
-    \caption[SVG From a PoiwerPoint]{A vector graphics with mixed pixel graphics as svg.}\label{fig:pixel}
-\end{figure}
-
-Tab.~\ref{tab:StripifyTable} and Tab.~\ref{tab:ListOfSymbols} compare our optimal 
-method achieved with our other method
-of Sec.~\ref{Sec:MainPart} with Gurobi and SCIP against the sub-optimal strip of our 
-other implementation.
-See Figs.~\ref{fig:latexfonts}, Figs.~\ref{fig:svgfonts}, and Figs.~\ref{fig:pixel} for different types of figures.
-Here we test the acronyms.
-
-% Test acronyms
-First time we use a \ac{GPU}.
-Next time, we use a \ac{GPU}.
-Now, we even have multiple \acp{GPU}.
+The error concentrates near the camera, where the pieces have the largest depth ratios.
+With $24\times24$ cells, the farthest cells of the floor err by at most 0.12~texels, about a quarter of the nearest ones.
+Pieces of equal length thus waste triangles far from the camera.
+In a mesh, a renderer can choose $n$ for each edge, since \cref{eq:Pieces} needs only the texture coordinates and the depths of its endpoints.
+Then, distant edges stay coarse.

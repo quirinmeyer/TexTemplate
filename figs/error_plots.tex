@@ -1,0 +1,40 @@
+% Plots of Sec. 4. pgfplots reads the data that scripts/sample_paper.py writes to figs/data/,
+% so the plots follow the data after every run of the script.
+\begin{tikzpicture}
+\begin{groupplot}[
+    group style={group size=2 by 1, horizontal sep=20mm},
+    scale only axis, width=0.36\textwidth, height=32mm,
+    xmode=log, log basis x=2, log ticks with fixed point,
+    grid=major, grid style={PaletteGray!25},
+    tick align=outside, tick pos=left,
+    every axis plot/.append style={line width=0.8pt},
+    legend cell align=left,
+    table/col sep=comma,
+    % Numbers as siunitx prints them: no separator below 10000.
+    /pgf/number format/1000 sep={\,}, /pgf/number format/min exponent for 1000 sep=4,
+]
+\nextgroupplot[
+    xmin=1, xmax=16, xtick={1, 2, 4, 8, 16},
+    ymin=0, ymax=0.7, ytick={0, 0.2, 0.4, 0.6},
+    xlabel={Depth ratio $r$},
+    ylabel={Max.\ error $\delta_\mathrm{max}$},
+]
+\addplot[PaletteBlue, domain=1:16, samples=200] {(sqrt(x) - 1) / (sqrt(x) + 1)};
+\addplot[PaletteDarkBlue, dashed, domain=1:16, samples=200] {(x - 1) / 4};
+\addplot[PaletteOrange, only marks, mark=o, mark size=2pt] table[x=ratio, y=measured] {figs/data/edge_error.csv};
+\nextgroupplot[
+    xmin=1, xmax=32, xtick={1, 2, 4, 8, 16, 32},
+    ymode=log, ymin=0.1, ymax=1000, ytick={0.1, 1, 10, 100, 1000},
+    xlabel={Pieces per edge $n$},
+    ylabel={Max.\ error $E_n$ [texels]},
+    legend pos=north east, legend columns=2,
+]
+\addplot[PaletteBlue] table[x=n, y=predicted] {figs/data/subdivision.csv};
+\addplot[PaletteDarkBlue, dashed] table[x=n, y=bound] {figs/data/subdivision.csv};
+\addplot[PaletteOrange, only marks, mark=o, mark size=2pt] table[x=n, y=measured] {figs/data/subdivision.csv};
+\addplot[PaletteGray, dotted, domain=1:32, samples=2] {0.5};
+\legend{Predicted, Bound, Measured, Half a texel}
+\end{groupplot}
+\node[anchor=north] at ([yshift=-1mm]group c1r1.outer south) {(a) One edge};
+\node[anchor=north] at ([yshift=-1mm]group c2r1.outer south) {(b) Subdivided floor};
+\end{tikzpicture}

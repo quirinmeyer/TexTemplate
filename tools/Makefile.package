@@ -32,7 +32,7 @@ BIBTEX_COMPILER				:= bibtex
 ### Folders
 BUILD_DEP					:= Makefile $(MAIN_FILE_TEX) $(wildcard template/*) $(wildcard common/*) $(wildcard secs/*.tex) \
 							   $(wildcard tabs/*.tex) $(wildcard codes/*.tex) $(wildcard lists/*.tex) $(wildcard figs/*.svg) \
-							   $(wildcard imgs/*.*)
+							   $(wildcard figs/*.tex) $(wildcard figs/data/*) $(wildcard imgs/*.*)
 
 ### Build Rules. Do not edit below this line unless you know what to do.
 all: $(OUTPUT_FILE_PDF) $(SUPPL_FILE_PDF)

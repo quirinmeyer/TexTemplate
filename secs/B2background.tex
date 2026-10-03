@@ -1,17 +1,19 @@
 \section{Previous Work}\label{sec:PreviousWork}
-Test some citations~\cite{Alliez03RAC,Peng05T3M,Maglo153MC}.
+We review perspective-correct interpolation, rasterization, hardware without perspective correction, and texture filtering.
 
-Here is another citation~\cite[p. 34]{Mlakar24EEC}.
-To get some information about this, see Alliez.~\cite{Alliez03RAC}
+Texture mapping goes back to Catmull~\cite{Catmull74SAC}.
+Heckbert and Moreton~\cite{Heckbert91IPT} show that the texture coordinates divided by the depth are affine functions of the screen position, and so is the reciprocal of the depth.
+Interpolating both and dividing them per pixel gives perspective-correct texture coordinates.
+Blinn~\cite{Blinn92HI} derives the same interpolation and calls it hyperbolic.
+We use it as the reference and quantify the error of its affine approximation.
 
-We will show in Section~\ref{Sec:MainPart}, we can fancy stuff.
+Pineda~\cite{Pineda88PAP} rasterizes triangles with edge functions, which also give the screen-space barycentric coordinates.
+Olano and Greer~\cite{Olano97TSC} rasterize in 2D homogeneous coordinates and interpolate perspective-correctly without dividing the vertices by their depth.
+Our software rasterizer uses edge functions.
 
-This is an e.g. example (wrong) and this e.g., is correct.
-Let's write more text. 
-And even more text. 
-Tables are cool~\cite[p. 34]{Mlakar24EEC}. 
+The first PlayStation lacks perspective correction.
+Some of its games split large polygons into smaller ones to reduce the distortion, others replace textures by solid colors~\cite{Copetti19PAP}.
+Our bound tells how fine such a split must be.
 
-Write one line per phrase.
-Do it like this.
-
-Add a new line to get a new paragraph.
+Mipmapping~\cite{Williams83PP} filters textures to avoid aliasing.
+It is orthogonal to our analysis, which considers the texture coordinates before the lookup.

@@ -1,7 +1,14 @@
 \usepackage{tikz}
-\usetikzlibrary{positioning}
+\usetikzlibrary{positioning, decorations.pathreplacing}
+% Plots from data (see figs/error_plots.tex): pgfplots reads CSV files that a script writes.
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=1.18}
 \usepackage{placeins}
 \usepackage{siunitx}
+% Numbers follow the surrounding font, e.g., \textbf{\num{0.59}} for the best value in a table:
+% in text, siunitx uses the text font (mode=match), including its weight.
+\sisetup{detect-weight=true, mode=match}
 \usepackage{enumitem}
 \usepackage{subcaption}
 \usepackage{multirow}
@@ -12,13 +19,18 @@
 \usepackage{array}
 \usepackage{lipsum}
 \usepackage{amsmath}
-\usepackage{ifthen} 
+% \mathbb{R} etc.; also needed by \nreal and friends in commands.tex. Some classes load their
+% own math fonts with these symbols (e.g., acmart), and amssymb would clash with them.
+\ifdefined\Bbbk\else\usepackage{amssymb}\fi
+\usepackage{ifthen}
 \usepackage{hyperref}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{layout}
 \usepackage{comment}
 \usepackage{listings}
+% Code listings (see codes/interpolation.tex and STYLEGUIDE.md, "Code").
+\lstset{basicstyle=\small\ttfamily, keywordstyle=\bfseries, commentstyle=\itshape, showstringspaces=false}
 \usepackage[inkscapepath=build/svg-inkscape]{svg}
 % The arXiv version (make arxiv) ships the Inkscape conversions with placeholder SVGs;
 % never convert them again.

@@ -2,6 +2,9 @@
 \def\input@path{{./download/egPublStyle-cgf/}}
 \makeatother
 \documentclass{download/egPublStyle-cgf/egpubl}
+% egpubl does not set the paper size, which hyperref and \layout (secs/D1TestBed.tex) need.
+\setlength{\paperwidth}{210mm}
+\setlength{\paperheight}{297mm}
 \SpecialIssuePaper
 \CGFStandardLicense
 \usepackage[T1]{fontenc}
@@ -14,30 +17,32 @@
 \usepackage{egweblnk} 
 \input{common/packages.tex}
 \input{common/commands.tex}
+% Table captions below the table, as in our EG papers (see STYLEGUIDE.md, "Captions").
+\captionsetup{tableposition=bottom}
 \graphicspath{{./}, {../figs}, {./download/egPublStyle-cgf/}} 
 \ifthenelse{\equal{\BlindSubmission}{1}}
 {
     \author[Paper 1024]{\parbox{\textwidth}{\centering Paper 1024}}    
 }
 {
-    \author[Kuth et al.]
-    {\parbox{\textwidth}{\centering             
-            Quirin Meyer$^1$\orcid{0000-0001-7073-442X}      		      		                
-            }
-            \\
-            {
+    \author[Q. Meyer]
+    {\parbox{\textwidth}{\centering
+            Quirin Meyer$^1$\orcid{0000-0001-7073-442X}
+            }%
+            \\%
+            {%
                 \parbox{\textwidth}
                 {
-                    \centering $^1$Coburg University of Applied Sciences and Arts, Germany 
-                }
-            }
+                    \centering $^1$Coburg University of Applied Sciences and Arts, Germany
+                }%
+            }%
     }
 }
 \glsdisablehyper
 \makeglossaries
 \input{lists/acronyms.tex}
 
-\title{The History of \Acsp{GPU}}
+\title{How Wrong Is Affine Texture Mapping?}
 \begin{document}
 \teaser
 {
@@ -46,18 +51,18 @@
 \maketitle
 \begin{abstract}
 \input{secs/A0abstract.tex}
-%  ACM CCS 2012 
-(see https://www.acm.org/publications/class-2012)
+%  ACM CCS 2012 (see https://www.acm.org/publications/class-2012)
 %Use http://dl.acm.org/ccs.cfm to generate the file.
 \begin{CCSXML}
 <ccs2012>
 <concept>
-<concept_id>10010147.10010371.10010352.10010381</concept_id>
-<concept_desc>Computing methodologies~Collision detection</concept_desc>
-<concept_significance>300</concept_significance>
+<concept_id>10010147.10010371.10010372.10010373</concept_id>
+<concept_desc>Computing methodologies~Rasterization</concept_desc>
+<concept_significance>500</concept_significance>
 </concept>
+</ccs2012>
 \end{CCSXML}
-\ccsdesc[300]{Computing methodologies~Collision detection}
+\ccsdesc[500]{Computing methodologies~Rasterization}
 
 \printccsdesc 
 \end{abstract}
@@ -65,4 +70,5 @@
 \input{secs/C0ack.tex} 
 \bibliographystyle{./download/egPublStyle-cgf/eg-alpha-doi}
 \bibliography{common/bibliography}
+\input{secs/appendix.tex}
 \end{document}

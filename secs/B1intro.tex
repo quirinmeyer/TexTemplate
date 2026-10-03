@@ -1,25 +1,24 @@
-\section{Introduction}
+\section{Introduction}\label{sec:Introduction}
+% The abstract stands alone and expands acronyms on its own. Here, the body starts fresh,
+% so that its first \ac expands the acronym again.
+\glsresetall
 
-Here we test some text.
+Texture mapping adds detail to surfaces without adding geometry~\cite{Catmull74SAC}.
+A rasterizer interpolates the texture coordinates of the vertices across each triangle.
+\term{Affine texture mapping} interpolates them linearly in screen space.
+It ignores the perspective and bends the texture on surfaces that recede from the viewer, as \cref{fig:Teaser}~(a) shows.
+The first PlayStation mapped textures this way, and some of its games split large polygons into smaller ones to reduce the bending~\cite{Copetti19PAP}.
 
-\noindent Waltz, bad nymph, for quick jigs vex.
-
-\noindent{\rm{Waltz, bad nymph, for quick jigs vex.}}
-
-\noindent{\sf{Waltz, bad nymph, for quick jigs vex.}}
-
-\noindent{\tt{Waltz, bad nymph, for quick jigs vex.}}
-
-\noindent{\bf{Waltz, bad nymph, for quick jigs vex.}}
-
-\noindent{\it{Waltz, bad nymph, for quick jigs vex.}}
-
-\noindent{\sl{Waltz, bad nymph, for quick jigs vex.}}
-
-\noindent{\sc{Waltz, bad nymph, for quick jigs vex.}}
-
-\newpage
-
-\layout
-
-\newpage
+\term{Perspective-correct} interpolation~\cite{Heckbert91IPT,Blinn92HI} removes the error.
+It needs a division per pixel, which today's \acp{GPU} perform in hardware.
+Without this division, a renderer must subdivide its surfaces instead.
+How finely?
+This paper answers the question in closed form.
+Thereby, we make the following contributions:
+\begin{itemize}
+    \item We derive the largest error of affine interpolation along an edge in closed form (\cref{sec:EdgeError}).
+    \item We bound the error of subdivided surfaces and derive how many pieces keep it below a threshold (\cref{sec:Subdivision}).
+    \item We confirm both results with a software rasterizer (\cref{sec:Results}).
+\end{itemize}
+We measure the error of the texture coordinates for nearest-texel lookups.
+Texture filtering~\cite{Williams83PP} is beyond the scope of this paper.

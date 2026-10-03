@@ -55,9 +55,11 @@ CODES_TEX					:= $(wildcard codes/*.tex)
 TABLES_TEX					:= $(wildcard tabs/*.tex)
 FIGURES_SVG 				:= $(wildcard figs/*.svg)
 FIGURES_TEX					:= $(wildcard figs/*.tex)
+# Data of the pgfplots figures, e.g., figs/data/subdivision.csv.
+FIGURES_DATA				:= $(wildcard figs/data/*)
 IMAGES 						:= $(wildcard imgs/*.*)
 
-BUILD_DEP					:= Makefile $(TEMPLATE_FILES) $(COMMON_FILES) $(CONTENT_TEX) $(TABLES_TEX) $(FIGURES_SVG) $(FIGURES_TEX) $(IMAGES) $(LISTS_TEX) $(CODES_TEX)
+BUILD_DEP					:= Makefile $(TEMPLATE_FILES) $(COMMON_FILES) $(CONTENT_TEX) $(TABLES_TEX) $(FIGURES_SVG) $(FIGURES_TEX) $(FIGURES_DATA) $(IMAGES) $(LISTS_TEX) $(CODES_TEX)
 
 ### Build Rules. Do not edit below this line unless you know what to do.
 
@@ -134,11 +136,13 @@ bibpreview: $(BIB_PREVIEW_NAME_PDF)
 # supplemental, with only the SVG figures they use. The SVGs are shipped together
 # with their Inkscape conversions (build/svg-inkscape), so the package builds without
 # Inkscape. cp -p keeps the conversions newer than their SVGs, otherwise the svg
-# package would convert them again.
+# package would convert them again. TikZ and pgfplots figures (figs/*.tex) and their
+# data (figs/data) are shipped as they are.
 PACKAGE_ZIP					:= $(OUTPUT_DIR)/package.zip
-USED_SVGS					:= $(shell grep -h -v -E '^[[:space:]]*%' $(MAIN_FILE_TEX) $(SUPPL_FILE_TEX) $(wildcard $(TEMPLATE_PATH)/main.tex $(TEMPLATE_PATH)/supplemental.tex) $(wildcard secs/*.tex) \
+USED_SVGS					:= $(shell grep -h -v -E '^[[:space:]]*%' $(MAIN_FILE_TEX) $(SUPPL_FILE_TEX) $(wildcard $(TEMPLATE_PATH)/main.tex $(TEMPLATE_PATH)/supplemental.tex) $(wildcard secs/*.tex figs/*.tex) \
 	| grep -o -E 'includesvg(\[[^]]*\])?\{[^}]*\}' | sed -E 's/.*\{([^}]*)\}/\1/' | sort -u)
 PACKAGE_SOURCE_DIRS			:= $(wildcard common secs tabs codes lists imgs)
+PACKAGE_FIGS				:= $(wildcard figs/*.tex figs/data)
 # Class files that the template downloads (e.g., download/egPublStyle-cgf for templates/eg):
 # the folders below download/ that its main.tex uses. Package and arXiv zip contain them,
 # since copy-editors and arXiv cannot run the template's download.
@@ -150,6 +154,7 @@ package: all
 	@cp -r $(TEMPLATE_PATH)/* $(PACKAGE_DIR)/template
 	@rm -f $(PACKAGE_DIR)/template/TabPreview.tex $(PACKAGE_DIR)/template/FigPreview.tex $(PACKAGE_DIR)/template/BibPreview.tex $(PACKAGE_DIR)/template/*.svg $(PACKAGE_DIR)/template/Makefile
 	@cp -r $(PACKAGE_SOURCE_DIRS) $(PACKAGE_DIR)/
+	@[ -z "$(PACKAGE_FIGS)" ] || cp -r $(PACKAGE_FIGS) $(PACKAGE_DIR)/figs/
 	@for d in $(TEMPLATE_DOWNLOADS); do mkdir -p $(PACKAGE_DIR)/download && cp -r $$d $(PACKAGE_DIR)/download/ || exit 1; done
 	@for f in $(USED_SVGS); do \
 		cp -p $$f.svg $(PACKAGE_DIR)/figs/ && \
@@ -180,6 +185,7 @@ arxiv: all
 	@cp -r $(TEMPLATE_PATH)/. $(ARXIV_DIR)/template/
 	@find $(ARXIV_DIR)/template \( -name '*.tex' ! -name arxiv.tex \) -o -name '*.svg' -o -name '*.eps' -o -name Makefile | xargs rm -f
 	@cp -r $(PACKAGE_SOURCE_DIRS) $(ARXIV_DIR)/
+	@[ -z "$(PACKAGE_FIGS)" ] || cp -r $(PACKAGE_FIGS) $(ARXIV_DIR)/figs/
 	@for d in $(TEMPLATE_DOWNLOADS); do mkdir -p $(ARXIV_DIR)/download && cp -r $$d $(ARXIV_DIR)/download/ || exit 1; done
 	@[ ! -d $(ARXIV_DIR)/download ] || find $(ARXIV_DIR)/download \( -name '*.tex' -o -name '*.eps' -o -name '*.zip' \) -delete
 	@for f in $(USED_SVGS); do \

@@ -1,4 +1,7 @@
-Here is an abstract. 
-We do great stuff.
-Yeah!
-\Ac{GPU}
+Affine texture mapping interpolates texture coordinates linearly in screen space.
+However, this bends textures on surfaces that recede from the viewer.
+We derive the largest error along an edge in closed form.
+As a fraction of the edge, it depends only on the ratio of the depths of the endpoints.
+From it, we bound the error of subdivided surfaces and compute how finely to subdivide them.
+For a floor whose far edge is four times as distant as its near edge, 24 by 24 cells reduce the largest error from 121 to 0.44 texels.
+Measurements with a software rasterizer stay within \qty{0.1}{\percent} of our predictions.

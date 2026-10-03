@@ -32,11 +32,15 @@
 \end{abstract}
 
 \let\oldcaption\caption
+\let\oldlabel\label
 \renewcommand{\caption}[2][]{\\#1}
-\begin{graphicalabstract}       
+% The label belongs to the teaser figure in the paper below.
+\renewcommand{\label}[1]{}
+\begin{graphicalabstract}
        \input{./secs/A0teaser.tex}
 \end{graphicalabstract}
 \let\caption\oldcaption
+\let\label\oldlabel
 
 
 \begin{highlights}
@@ -49,7 +53,12 @@
 geometry compression \sep mesh shaders \sep real-time rendering
 \end{keyword}      
 \end{frontmatter}
+% The teaser as the first figure of the paper, since the text refers to it.
+\begin{figure*}[t]
+       \input{./secs/A0teaser.tex}
+\end{figure*}
 \input{secs/structure.tex}
+\input{secs/appendix.tex}
 
 \bibliographystyle{elsarticle-harv}
 \bibliography{common/bibliography}

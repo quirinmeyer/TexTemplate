@@ -1,0 +1,20 @@
+% Names match the symbols of the text: lambda for $\lambda_k$, w for $w_k$, u for $\vect{u}_k$, mu for $\mu_k$.
+% mathescape typesets $...$ in the comments of the listing.
+\begin{lstlisting}[language=C++, float=t, mathescape=true, morekeywords={float2, float3},
+    label=lst:Interpolation, caption={\captiontitle{Texture Coordinates of a Pixel}
+    Affine interpolation weights the texture coordinates with the barycentric coordinates $\lambda_k$,
+    perspective-correct interpolation with the weights $\mu_k$ of \cref{eq:Weights}.}]
+// Barycentric coordinates $\lambda_k$ as weights.
+float2 affine(float3 lambda, const float2 u[3]) {
+    return lambda.x * u[0] + lambda.y * u[1]
+         + lambda.z * u[2];
+}
+
+// Weights $\mu_k$; w holds the depths $w_k$.
+float2 perspective(float3 lambda, float3 w,
+                   const float2 u[3]) {
+    float3 q = lambda / w;
+    float3 mu = q / (q.x + q.y + q.z);
+    return affine(mu, u);
+}
+\end{lstlisting}

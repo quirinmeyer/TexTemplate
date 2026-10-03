@@ -1,33 +1,80 @@
-\section{Main Part}\label{Sec:MainPart}
+\section{Interpolation Error}\label{sec:InterpolationError}
+We recall perspective-correct interpolation (\cref{sec:PerspectiveCorrect}), derive the error of affine interpolation along an edge (\cref{sec:EdgeError}), and bound the error after subdivision (\cref{sec:Subdivision}).
 
-\subsection{Testing some math}
-
-A regular formula
-
+\subsection{Perspective-Correct Interpolation}\label{sec:PerspectiveCorrect}
+A triangle has the vertices $\pnt{p}_0$, $\pnt{p}_1$, $\pnt{p}_2$ in camera space with the texture coordinates $\vect{u}_0$, $\vect{u}_1$, $\vect{u}_2$ in texels.
+The projection maps the vertex $\pnt{p}_k$ to the homogeneous coordinates $[x_k, y_k, z_k, w_k]^\top$ and to the screen position $[x_k/w_k, y_k/w_k]^\top$.
+For a perspective projection, $w_k$ is the depth of $\pnt{p}_k$.
+The rasterizer computes the screen-space barycentric coordinates $\lambda_0$, $\lambda_1$, $\lambda_2$ of a pixel with edge functions~\cite{Pineda88PAP}.
+Affine interpolation weights the texture coordinates with them,
 \begin{equation}
-    x^2 + y^2 = z^2 
+    \vect{u}_\mathrm{aff} = \sum_{k=0}^{2} \lambda_k \vect{u}_k.
 \end{equation}
-and another one
+The texture coordinates are affine functions in camera space, however, not in screen space.
+The correct texture coordinates $\vect{u} = \sum_{k} \mu_k \vect{u}_k$ use the weights~\cite{Heckbert91IPT}
 \begin{equation}
-    \left\Vert \vec{x} \right\Vert = \sqrt{\sum_{i=0}^{n}{x_i^2 + y_i^2}}.
+    \mu_k = \frac{\lambda_k / w_k}{\sum_{j=0}^{2} \lambda_j / w_j}.
+    \label{eq:Weights}
 \end{equation}
+\Cref{lst:Interpolation} implements both interpolations.
 
-Here is something with matrices:
+\input{codes/interpolation.tex}
+
+\subsection{Error Along an Edge}\label{sec:EdgeError}
+We analyze the edge from $\pnt{p}_0$ to $\pnt{p}_1$ and order its endpoints such that $w_0 \le w_1$.
+A pixel on the edge has the barycentric coordinates $\lambda_0 = 1 - t$, $\lambda_1 = t$, and $\lambda_2 = 0$, where $t\in[0,1]$ is its position on the edge in screen space.
+The pixel shows the point $(1 - s)\,\pnt{p}_0 + s\,\pnt{p}_1$ with $s = \mu_1$.
+With the \term{depth ratio} $r = w_1 / w_0 \ge 1$, \cref{eq:Weights} gives
 \begin{equation}
-\bf{A}=
-\begin{bmatrix}
-    a & b & c\\
-    d & e & f\\
-\end{bmatrix}^\top.
+    s = \frac{t / w_1}{(1 - t) / w_0 + t / w_1} = \frac{t}{r - (r - 1)\,t}.
 \end{equation}
+\Cref{fig:EdgeDiagram} illustrates this relation for $r = 4$.
+Affine interpolation uses $t$ instead of $s$.
+It is off by $\Vert \vect{u}_\mathrm{aff} - \vect{u} \Vert = (t - s)\,\ell$, where $\ell = \Vert \vect{u}_1 - \vect{u}_0 \Vert$ is the length of the edge in the texture.
+The relative error
+\begin{equation}
+    \delta(t) = t - s = \frac{(r - 1)\,t\,(1 - t)}{r - (r - 1)\,t}
+\end{equation}
+vanishes at both endpoints.
+It peaks where its derivative vanishes, at
+\begin{equation}
+    t^\ast = \frac{\sqrt{r}}{\sqrt{r} + 1},
+    \qquad
+    \delta_\mathrm{max} = \delta(t^\ast) = \frac{\sqrt{r} - 1}{\sqrt{r} + 1}.
+    \label{eq:MaxError}
+\end{equation}
+The \SupplementalName{} gives the derivation.
+The maximum depends only on the depth ratio: neither on the size of the triangle on the screen nor on the field of view.
+For $r = 4$, the error peaks at two thirds of the edge on the screen and amounts to a third of the edge.
+In our experiments, the error inside a triangle never exceeds the largest error along its edges (see the \SupplementalName).
 
-An some inline stuff $\sum a_i=\bf{B}$.
-
-\begin{table}
-    \caption[List of Symbols]{Keep a list of symbols in your paper.}
-    \label{tab:ListOfSymbols}
-    \resizebox{\columnwidth}{!}
-    {
-    %\input{tabs/ListOfSymbols.tex}
+\begin{figure}[t]
+    \centering
+    \input{figs/edge_diagram.tex}
+    \caption{\captiontitle{Side View of an Edge}
+        Rays through equal steps of $t$ on the screen (black) hit the edge at unequal steps of $s$ (blue).
+        Affine interpolation assumes equal steps on the edge (orange).
+        The brace marks the error $\delta(\tfrac{1}{2}) = 0.3$ for the depth ratio $r = 4$.
     }
-\end{table}
+    \label{fig:EdgeDiagram}
+\end{figure}
+
+\subsection{Subdivision}\label{sec:Subdivision}
+Subdivision shortens the edges and reduces their depth ratios.
+We split an edge into $n$ pieces of equal length in camera space.
+The piece next to the camera has the largest depth ratio, $1 + (r - 1)/n$, and the length $\ell / n$ in the texture.
+Since $(\sqrt{r} - 1)/(\sqrt{r} + 1) = (r - 1)/(\sqrt{r} + 1)^2 \le (r - 1)/4$, \cref{eq:MaxError} bounds the largest error $E_n$ of all pieces by
+\begin{equation}
+    E_n \le \frac{\ell}{n} \cdot \frac{r - 1}{4n} = \frac{\ell\,(r - 1)}{4n^2}.
+    \label{eq:SubdivisionBound}
+\end{equation}
+The error falls quadratically with $n$.
+The bound becomes tight for fine subdivisions, where the depth ratios of the pieces approach one.
+To keep the error below a threshold $\varepsilon$, we need
+\begin{equation}
+    n \ge \sqrt{\frac{\ell\,(r - 1)}{4\varepsilon}}
+    \label{eq:Pieces}
+\end{equation}
+pieces.
+The diagonal of the floor of \cref{fig:Teaser} has the length $\ell = 362$~texels and the depth ratio $r = 4$.
+For half a texel, $\varepsilon = 1/2$, \cref{eq:Pieces} requires $n \ge 23.3$, i.e., $24\times24$ cells or \num{1152} triangles.

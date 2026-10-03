@@ -1,6 +1,26 @@
 % Content of the supplemental material (supplemental.tex). The arXiv version (make arxiv)
 % appends it to the paper as appendix; \SupplementalName then reads "appendix".
-\section{Additional Material}\label{Sec:AdditionalMaterial}
-This \SupplementalName{} extends the paper.
-References to the paper work as within the paper, e.g., to \cref{Sec:MainPart} or \cref{tab:StripifyTable}, since the supplemental reads the labels of the paper with the \texttt{xr} package.
-It has its own bibliography~\cite{Alliez03RAC}; BibTeX fails on an empty one, so keep at least one citation.
+% References to the paper (\cref{eq:MaxError}) work as within the paper: the supplemental reads
+% the labels of the paper with the xr package. It has its own bibliography; BibTeX fails on an
+% empty one, so keep at least one citation.
+\section{Maximum of the Edge Error}\label{sec:MaxErrorDerivation}
+We derive \cref{eq:MaxError} of the paper for $r > 1$.
+The derivative of the relative error is
+\begin{equation}
+    \frac{\mathrm{d}\delta}{\mathrm{d}t} = \frac{(r - 1)\,\bigl((r - 1)\,t^2 - 2r\,t + r\bigr)}{\bigl(r - (r - 1)\,t\bigr)^2}.
+\end{equation}
+Its numerator vanishes at $t = (r \pm \sqrt{r})/(r - 1)$.
+Only the smaller root, $t^\ast = (r - \sqrt{r})/(r - 1) = \sqrt{r}/(\sqrt{r} + 1)$, lies in $[0, 1]$.
+With $1 - t^\ast = 1/(\sqrt{r} + 1)$ and $r - (r - 1)\,t^\ast = \sqrt{r}$, the maximum is
+\begin{equation}
+    \delta(t^\ast) = \frac{(r - 1)\,\sqrt{r}}{(\sqrt{r} + 1)^2\,\sqrt{r}} = \frac{\sqrt{r} - 1}{\sqrt{r} + 1}.
+\end{equation}
+
+\section{Error Inside a Triangle}\label{sec:InteriorError}
+In \cref{sec:EdgeError} of the paper, we claim that the error inside a triangle never exceeds the largest error along its edges.
+We test the claim with \num{3000} random triangles.
+Their depths $w_k$ are uniform in $[1, 10]$, their texture coordinates $\vect{u}_k$ uniform in $[0, 1]^2$.
+For each triangle, we evaluate the error $\Vert \vect{u}_\mathrm{aff} - \vect{u} \Vert$ with the weights of \cref{eq:Weights}~\cite{Heckbert91IPT} at the \num{19701} interior points of a barycentric grid with the spacing $1/200$.
+We divide the largest error by the largest error along the edges, $\ell\,\delta_\mathrm{max}$ for each edge.
+The largest ratio over all triangles is 0.999869, close to but below one.
+The floor confirms the claim, too: its measured errors match the edge errors in \cref{tab:Subdivision}.
