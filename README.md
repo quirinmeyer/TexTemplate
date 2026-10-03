@@ -22,6 +22,7 @@ It has the following features:
 - Packages for copy-editors and arXiv that build without Inkscape.
 - GitHub workflow that builds the pdfs on every push and publishes them as releases.
 - A style guide for writing papers, see [STYLEGUIDE.md](STYLEGUIDE.md).
+- A prompt to check a paper against the style guide with an AI, see [STYLECHECK.md](STYLECHECK.md).
 - A short sample paper that follows the style guide, with a test bed for the template in its appendix.
 
 # Installation
@@ -423,6 +424,7 @@ which requires the GitHub CLI ```gh```.
 [STYLEGUIDE.md](STYLEGUIDE.md) describes how we write papers and theses:
 language, acronyms, structure, mathematics, figures, captions, tables, code, references, citation keys, assets, and a checklist before you hand in a draft.
 The sample paper in ```secs/``` follows it.
+[STYLECHECK.md](STYLECHECK.md) has a prompt that lets an AI check your paper against the guide.
 
 # History
 I have always been using LaTeX to create my computer graphics research papers. 

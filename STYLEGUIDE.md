@@ -103,6 +103,7 @@ Our papers follow this structure:
 13. **Supplemental material**: long proofs, extra results, video.
 
 Every section starts with one sentence of overview that references its subsections with `\cref`.
+These sentences are the first to go if the paper is too long (Section 12).
 Every claim needs a citation, a proof, or a measurement.
 
 ## 3. Mathematics
@@ -335,6 +336,53 @@ Budget & Method & Max $\downarrow$ & Mean $\downarrow$ \\
 - Commit often with meaningful messages.
 - AI tools: follow the policy of the venue and the lab, and disclose their use.
   Verify every statement and every number. You are responsible for the content.
+- Before you hand in a draft, let an AI check it against this guide with the prompt in [STYLECHECK.md](STYLECHECK.md).
+  Verify every finding.
+
+## 12. When the Paper Is Too Long
+
+Cut the layout first, then words, then content.
+Never change the layout of the template: no smaller fonts, margins, or line spacing, no negative `\vspace`, no `\resizebox`.
+Venues reject such papers, and reviewers notice.
+
+### Before you cut
+- Read the call for papers: which pages count? References, acknowledgments, or an appendix often do not.
+- Finish the content first. Then count the lines you must save.
+- Keep a reserve for the final version: author names, affiliations, and acknowledgments return after the blind review.
+
+### Layout: lines for free
+- A paragraph that ends with one or two words: rephrase it until its last line disappears. Each saves a full line.
+- White space at the end of a column: usually a float that does not fit. Shrink it, or move it in the source.
+- Crop white space in figures. Make them wider and less tall. Place sub-figures side by side.
+- Merge related figures or tables into one.
+- Tables: shorter headers, abbreviations explained in the caption, `\small`, or transpose the table.
+- Short equations inline, several short equations in one display. A display costs two to three lines.
+- Short lists as running text: "(1) ..., (2) ...".
+
+### Bibliography
+- Drop the DOIs if the venue allows it. EG: `eg-alpha` instead of `eg-alpha-doi` in `template/main.tex`.
+- Shorter venue names, abbreviated the same way everywhere, e.g., "Proc. SIGGRAPH".
+  With `@string` macros in the `.bib` file, this is one change per venue.
+- No URLs for entries with a DOI.
+- One citation suffices for a well-known fact. Never drop citations of related work to save space.
+
+### Words
+- Drop the overview sentences at the start of sections (Section 2) and every "In this section, we ...".
+- Say it once. Abstract, introduction, contributions, and conclusion repeat each other. Shorten the conclusion first.
+- Merge short paragraphs and short subsections. A heading costs two to three lines.
+- "\Cref{fig:Plots} shows that the error falls." becomes "The error falls (\cref{fig:Plots})."
+- Cut filler words and hedges (Section 1). Write a defined symbol instead of repeating its name.
+- Merge "Limitations and Future Work" with the conclusion.
+
+### Content
+- Move long proofs, implementation details, parameter lists, and additional results to the supplemental material.
+- Shorten previous work: group papers, one sentence per group, but keep every relevant citation.
+- Remove figures and tables that support no claim.
+- Shorten code listings, or replace them by equations or pseudocode.
+
+### Final version only
+- `\looseness=-1` at the end of a paragraph asks TeX to set it one line shorter.
+  It needs slack in the paragraph. Rephrasing is better.
 
 ## Checklist Before You Hand In a Draft
 - [ ] Every figure and table is referenced in order and has a caption with a title.
@@ -347,5 +395,7 @@ Budget & Method & Max $\downarrow$ & Mean $\downarrow$ \\
 - [ ] Tables without `\resizebox`, with units in the header.
 - [ ] Spell and grammar check done.
 - [ ] No warnings, no overfull boxes, no `\todo`.
+- [ ] Within the page limit, with the fonts, margins, and spacing of the template.
+- [ ] AI check with [STYLECHECK.md](STYLECHECK.md) done, every finding verified.
 - [ ] For review: anonymized (`\BlindSubmission`), no identifying links.
 - [ ] `make package` and `make arxiv-test` pass.
