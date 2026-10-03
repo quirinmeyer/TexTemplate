@@ -20,7 +20,7 @@ It has the following features:
 - Optional supplemental material as a second pdf with references into the paper.
 - Consistent references with cleveref ("Sec. 3", "Eq. (4)").
 - Packages for copy-editors and arXiv that build without Inkscape.
-- GitHub workflow that builds the pdfs on every push and publishes them as releases.
+- GitHub workflow that builds the pdfs on demand and publishes them as releases.
 - A style guide for writing papers, see [STYLEGUIDE.md](STYLEGUIDE.md).
 - A prompt to check a paper against the style guide with an AI, see [STYLECHECK.md](STYLECHECK.md).
 - A short sample paper that follows the style guide, with a test bed for the template in its appendix.
@@ -410,9 +410,10 @@ Before submitting, upload the zip to arXiv without submitting it, and check the 
 
 ## Releases and GitHub Workflow
 
-The workflow in ```.github/workflows/build-pdf.yml``` builds the pdfs on every push and attaches them to the workflow run.
-On ```main```, it also publishes them to the rolling release ```latest```.
-To publish a permanent release, run the workflow manually with a tag, or call
+The workflow in ```.github/workflows/build-pdf.yml``` runs only when you start it (Actions tab, Build PDF, Run workflow), since every run costs GitHub Actions minutes.
+It builds the pdfs, attaches them to the workflow run, and publishes them to the rolling release ```latest```.
+To build on every push, add the ```push``` trigger that the comment in the workflow shows.
+To publish a permanent release, run the workflow with a tag, or call
 
 ```make release RELEASE_TAG=camera-ready```
 

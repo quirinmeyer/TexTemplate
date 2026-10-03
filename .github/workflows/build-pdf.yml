@@ -1,21 +1,20 @@
-# Build the paper and supplemental pdfs on every push.
+# Build the paper and supplemental pdfs. Runs only when started by hand
+# (Actions tab -> Build PDF -> Run workflow), since every run costs Actions minutes.
 #
-# - Any branch: the pdfs are attached to the workflow run as an artifact.
-# - main:       the pdfs are also published to the rolling "latest" release,
-#               which is moved to the pushed commit and its files replaced.
-#               Stable download link:
-#               https://github.com/<owner>/<repo>/releases/download/latest/<OUTPUT_FILE>.pdf
-#               (OUTPUT_FILE is set in the Makefile)
-# - Manual run (Actions tab -> Build PDF -> Run workflow): publishes a separate,
-#   permanent release with the given tag, e.g. "camera-ready".
+# - The pdfs are attached to the workflow run as an artifact.
+# - Without a tag, they are also published to the rolling "latest" release,
+#   which is moved to the built commit and its files replaced.
+#   Stable download link:
+#   https://github.com/<owner>/<repo>/releases/download/latest/<OUTPUT_FILE>.pdf
+#   (OUTPUT_FILE is set in the Makefile)
+# - With a tag, e.g. "camera-ready": a separate, permanent release.
 name: Build PDF
 
 on:
-  push:
-    branches: ["**"]
-    paths-ignore:
-      - "doc/**"
-      - "README.md"
+  # To build on every push again, add:
+  #   push:
+  #     branches: ["**"]
+  #     paths-ignore: ["doc/**", "README.md"]
   workflow_dispatch:
     inputs:
       tag:
