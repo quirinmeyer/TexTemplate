@@ -1,0 +1,49 @@
+% Supplemental material of the paper as a document of its own; built if supplemental.tex
+% exists in the root folder. Its content is in secs/S0supplemental.tex, which the arXiv
+% version (make arxiv) appends to the paper as appendix instead.
+\makeatletter
+\def\input@path{{./download/egPublStyle-cgf/}}
+\makeatother
+\documentclass{download/egPublStyle-cgf/egpubl}
+\SpecialIssuePaper
+\CGFStandardLicense
+\usepackage[T1]{fontenc}
+\usepackage{dfadobe}
+\usepackage{cite}
+\BibtexOrBiblatex
+\electronicVersion
+\PrintedOrElectronic
+\usepackage[pdftex]{graphicx}
+\usepackage{egweblnk}
+\input{common/packages.tex}
+\input{common/commands.tex}
+\graphicspath{{./}, {../figs}, {./download/egPublStyle-cgf/}}
+
+% Labels of the paper (e.g., \cref{Sec:MainPart}) come from its .aux file.
+% The Makefile defines \PaperAux from OUTPUT_FILE; the fallback is for building by hand.
+\usepackage{xr}
+\providecommand{\PaperAux}{build/Paper1024}
+% Import only the paper's labels, not its citations: the supplemental has its own bibliography,
+% and citations imported by xr break hyperref's citation links (undefined \XR@prefix).
+\makeatletter
+{\let\bibcite\@gobbletwo\externaldocument{\PaperAux}}
+\makeatother
+
+\ifthenelse{\equal{\BlindSubmission}{1}}
+{
+    \author[Paper 1024]{\parbox{\textwidth}{\centering Paper 1024}}
+}
+{
+    \author[Meyer]{\parbox{\textwidth}{\centering Quirin Meyer}}
+}
+\glsdisablehyper
+\makeglossaries
+\input{lists/acronyms.tex}
+
+\title{The History of \Acsp{GPU}\\Supplemental Material}
+\begin{document}
+\maketitle
+\input{secs/S0supplemental.tex}
+\bibliographystyle{./download/egPublStyle-cgf/eg-alpha-doi}
+\bibliography{common/bibliography}
+\end{document}

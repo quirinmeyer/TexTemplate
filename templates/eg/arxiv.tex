@@ -1,0 +1,16 @@
+% Overrides of egpubl.cls for the arXiv version (make arxiv); loaded from common/arxiv.tex.
+\makeatletter
+% No journal or conference header (volume, number, editors) on the title page and no
+% copyright or "submitted to" text in the footers.
+\copyrightTextTitPag{}
+\copyrightTextRunPag{}
+\def\ps@titlepage{\let\@mkboth\@gobbletwo
+  \let\@oddhead\@empty\let\@evenhead\@empty
+  \let\@oddfoot\@empty\let\@evenfoot\@empty}
+\let\@oddfoot\@empty
+\let\@evenfoot\@empty
+% The class sets the PDF subject and keywords to the conference and the journal.
+\hypersetup{pdfsubject={}, pdfkeywords={}}
+% The class's \appendix numbers only sections; number subsections, too (e.g., B.2.3).
+\g@addto@macro\appendix{\setcounter{secnumdepth}{3}}
+\makeatother

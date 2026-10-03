@@ -1,66 +1,77 @@
+# Builds the paper and, if there is one, its supplemental material from the package
+# sources. The SVG figures come with their Inkscape conversions in build/svg-inkscape,
+# so neither Inkscape nor -shell-escape is needed.
+# make package in the project copies this file and fills in OUTPUT_FILE.
+
 # Configure programs to use
-PDF_VIEWER 					:= evince
+# Firefox: on WSL the Windows Firefox, which needs Windows paths (file:///C:/...), otherwise
+# the Linux firefox. To use another viewer, e.g., evince, set PDF_VIEWER := evince.
+FIREFOX_WINDOWS				:= /mnt/c/Program Files/Mozilla Firefox/firefox.exe
+PDF_VIEWER 					:= $(shell [ -x "$(FIREFOX_WINDOWS)" ] && echo '"$(FIREFOX_WINDOWS)"' || echo firefox)
+PDF_URL						= $(if $(findstring .exe,$(PDF_VIEWER)),file:///$$(wslpath -w $(1) | tr '\\' '/'),$(1))
 
 # Configure main input files
 MAIN_FILE_TEX				:= main.tex
-BIBLIOGRAPHY				:= common/bibliography.bib
+SUPPL_FILE_TEX				:= $(wildcard supplemental.tex)
 
 # Configure output files
 OUTPUT_DIR					:= build
-OUTPUT_FILE					:= rtmd
+OUTPUT_FILE					:= @OUTPUT_FILE@
 
 ### Do not edit below this line
 OUTPUT_FILE_PDF				:= $(OUTPUT_DIR)/$(OUTPUT_FILE).pdf
-
-BIB_PREVIEW_NAME			:= BibPreview
-BIB_PREVIEW_NAME_PDF		:= $(OUTPUT_DIR)/$(BIB_PREVIEW_NAME).pdf
-BIB_PREVIEW_TEX				:= template/BibPreview.tex
+SUPPL_OUTPUT_FILE			:= $(OUTPUT_FILE)_Supplemental
+SUPPL_FILE_PDF				:= $(if $(SUPPL_FILE_TEX),$(OUTPUT_DIR)/$(SUPPL_OUTPUT_FILE).pdf)
+# Tells supplemental.tex where the paper's .aux is (cross-references to the paper).
+SUPPL_TEX_INPUT				:= "\def\PaperAux{$(OUTPUT_DIR)/$(OUTPUT_FILE)}\input{$(SUPPL_FILE_TEX)}"
 
 ### Latex tools
-LATEX_COMPILER				:= pdflatex -shell-escape -halt-on-error -file-line-error -output-directory $(OUTPUT_DIR) 
+LATEX_COMPILER				:= pdflatex -halt-on-error -file-line-error -output-directory $(OUTPUT_DIR)
 BIBTEX_COMPILER				:= bibtex
 
 ### Folders
-TEMPLATE_FILES 				:= $(wildcard template/**)
-COMMON_FILES 				:= $(wildcard common/*.*)
-CONTENT_TEX					:= $(wildcard secs/*.tex)
-TABLES_TEX					:= $(wildcard tabs/*.tex)
-FIGURES_SVG 				:= $(wildcard figs/*.svg)
-IMAGES_PNG 					:= $(wildcard imgs/*.png)
-
-BUILD_DEP					:= Makefile $(TEMPLATE_FILES) $(COMMON_FILES) $(CONTENT_TEX) $(TABLES_TEX) $(FIGURES_SVG) $(IMAGES_PNG)
-
+BUILD_DEP					:= Makefile $(MAIN_FILE_TEX) $(wildcard template/*) $(wildcard common/*) $(wildcard secs/*.tex) \
+							   $(wildcard tabs/*.tex) $(wildcard codes/*.tex) $(wildcard lists/*.tex) $(wildcard figs/*.svg) \
+							   $(wildcard imgs/*.*)
 
 ### Build Rules. Do not edit below this line unless you know what to do.
-all: $(OUTPUT_FILE_PDF)
+all: $(OUTPUT_FILE_PDF) $(SUPPL_FILE_PDF)
 
-clean:	
-	@rm -rf $(OUTPUT_DIR)		
+# Keeps build/svg-inkscape, which holds the converted figures.
+clean:
+	@find $(OUTPUT_DIR) -maxdepth 1 -type f -delete
 
 $(OUTPUT_FILE_PDF): $(BUILD_DEP)
-	@if [ -f "template/Makefile" ]; then \
-	    $(MAKE) -C "template"; \
-	fi
-	@mkdir -p $(OUTPUT_DIR)	
-	@$(LATEX_COMPILER) -jobname=$(OUTPUT_FILE) $(MAIN_FILE_TEX); touch $(OUTPUT_DIR)/$(MAINFILE_PDF)
+	@mkdir -p $(OUTPUT_DIR)
+	@$(LATEX_COMPILER) -jobname=$(OUTPUT_FILE) $(MAIN_FILE_TEX)
 	-@$(BIBTEX_COMPILER) $(OUTPUT_DIR)/$(OUTPUT_FILE)
+	-@makeglossaries -d $(OUTPUT_DIR) $(OUTPUT_FILE)
 	@$(LATEX_COMPILER) -jobname=$(OUTPUT_FILE) $(MAIN_FILE_TEX)
 	@$(LATEX_COMPILER) -jobname=$(OUTPUT_FILE) $(MAIN_FILE_TEX)
-	
-rebuild: clean $(OUTPUT_FILE_PDF)
 
-view: $(OUTPUT_FILE_PDF)	
-	@$(PDF_VIEWER) $(shell realpath $(OUTPUT_FILE_PDF)) &
+ifneq ($(SUPPL_FILE_TEX),)
+# Depends on the paper for its .aux (cross-references).
+$(SUPPL_FILE_PDF): $(BUILD_DEP) $(SUPPL_FILE_TEX) $(OUTPUT_FILE_PDF)
+	@$(LATEX_COMPILER) -jobname=$(SUPPL_OUTPUT_FILE) $(SUPPL_TEX_INPUT)
+	-@$(BIBTEX_COMPILER) $(OUTPUT_DIR)/$(SUPPL_OUTPUT_FILE)
+	-@makeglossaries -d $(OUTPUT_DIR) $(SUPPL_OUTPUT_FILE)
+	@$(LATEX_COMPILER) -jobname=$(SUPPL_OUTPUT_FILE) $(SUPPL_TEX_INPUT)
+	@$(LATEX_COMPILER) -jobname=$(SUPPL_OUTPUT_FILE) $(SUPPL_TEX_INPUT)
+endif
+
+rebuild: clean all
+
+view: all
+	@$(PDF_VIEWER) $(foreach f,$(realpath $(OUTPUT_FILE_PDF) $(SUPPL_FILE_PDF)),"$(call PDF_URL,$(f))") &
 
 help:
 	@echo "Run \"make\" with one of the options:"
 	@echo "Option           Description"
 	@echo "----------------------------------------------------------------------------------"
-	@echo "all              Creates $(OUTPUT_FILE_PDF)."
-	@echo "clean            Removes all build-artifacts including the $(OUTPUT_DIR) directory."
-	@echo "view             Shows the $(OUTPUT_FILE_PDF) with $(PDF_VIEWER)."	
-	@echo "                 bibliography."
+	@echo "all              Creates $(OUTPUT_FILE_PDF) $(SUPPL_FILE_PDF)"
+	@echo "clean            Removes the build artifacts, but keeps the converted figures."
+	@echo "view             Shows the pdfs with $(PDF_VIEWER)."
 	@echo "----------------------------------------------------------------------------------"
 	@echo ""
 
-.PHONY: all clean rebuild bibpreview view help package
+.PHONY: all clean rebuild view help

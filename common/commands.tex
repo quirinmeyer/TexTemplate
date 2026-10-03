@@ -40,3 +40,15 @@
 \newcommand{\mat}[1]{\mathbf{#1}}
 \newcommand{\quat}[1]{\underline{#1}}
 \newcommand{\pnt}[1]{\mathbf{#1}}
+
+% Where the supplemental material is: the separate supplemental.tex, or the appendix of the
+% arXiv version, whose main file (make arxiv) defines this name first.
+\providecommand{\SupplementalName}{supplemental material}
+\ifdefined\ArxivVersion\input{common/arxiv.tex}\fi
+
+% \todo{who or what}{text}: a highlighted note in the pdf.
+\definecolor{todocolor}{RGB}{220,0,120}
+\newcommand{\todo}[2]{%
+  {\color{red}\textbf{[TODO: #1] }}%
+  {\color{todocolor}{#2}}%
+}

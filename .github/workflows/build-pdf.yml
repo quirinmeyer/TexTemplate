@@ -1,0 +1,119 @@
+# Build the paper and supplemental pdfs on every push.
+#
+# - Any branch: the pdfs are attached to the workflow run as an artifact.
+# - main:       the pdfs are also published to the rolling "latest" release,
+#               which is moved to the pushed commit and its files replaced.
+#               Stable download link:
+#               https://github.com/<owner>/<repo>/releases/download/latest/<OUTPUT_FILE>.pdf
+#               (OUTPUT_FILE is set in the Makefile)
+# - Manual run (Actions tab -> Build PDF -> Run workflow): publishes a separate,
+#   permanent release with the given tag, e.g. "camera-ready".
+name: Build PDF
+
+on:
+  push:
+    branches: ["**"]
+    paths-ignore:
+      - "doc/**"
+      - "README.md"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag for a permanent release (leave empty to update \"latest\")"
+        required: false
+        default: ""
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # A newer push to the same branch supersedes this build.
+    concurrency:
+      group: build-pdf-${{ github.ref }}
+      cancel-in-progress: true
+    # Full TeX Live on Debian.
+    container: texlive/texlive:latest
+    outputs:
+      files: ${{ steps.files.outputs.names }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # inkscape: svg package converts figs/*.svg via -shell-escape
+      # bc: build-time report in the Makefile
+      # wget, unzip: templates that download their class files (e.g., templates/eg)
+      - name: Install build tools
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends make bc inkscape wget unzip
+
+      - name: Build
+        run: make all
+
+      # The pdf names come from the Makefile, so renaming the paper there is enough.
+      - name: List pdfs
+        id: files
+        run: |
+          {
+            echo "paths<<EOF"
+            make -s print-release-files
+            echo "EOF"
+            echo "names=$(make -s print-release-files | xargs -n1 basename | xargs)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload pdfs
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdfs
+          path: ${{ steps.files.outputs.paths }}
+          if-no-files-found: error
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: latex-logs
+          path: build/*.log
+
+  release:
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    # Never cancel a release half-way (tag moved, files not yet replaced).
+    concurrency:
+      group: release-pdf
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      FILES: ${{ needs.build.outputs.files }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: pdfs
+
+      - name: Publish permanent release
+        if: inputs.tag != ''
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          gh release create "$TAG" $FILES \
+            --target "$GITHUB_SHA" \
+            --notes "Built from commit ${GITHUB_SHA::7}."
+
+      - name: Update rolling "latest" release
+        if: inputs.tag == ''
+        run: |
+          NOTES="Built from commit ${GITHUB_SHA::7} on $(date -u '+%Y-%m-%d %H:%M') UTC."
+          if gh release view latest >/dev/null 2>&1; then
+            gh api -X PATCH "repos/$GH_REPO/git/refs/tags/latest" \
+              -f sha="$GITHUB_SHA" -F force=true >/dev/null
+            gh release upload latest $FILES --clobber
+            gh release edit latest --latest --notes "$NOTES"
+          else
+            gh release create latest $FILES \
+              --target "$GITHUB_SHA" \
+              --title "Latest build" \
+              --latest \
+              --notes "$NOTES"
+          fi

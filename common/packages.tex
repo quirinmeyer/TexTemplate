@@ -6,6 +6,8 @@
 \usepackage{subcaption}
 \usepackage{multirow}
 \usepackage{mathtools}
+% Number only equations that are referenced (see the cleveref fixes at the end of this file).
+\mathtoolsset{showonlyrefs=true}
 \usepackage{makecell}
 \usepackage{array}
 \usepackage{lipsum}
@@ -18,6 +20,9 @@
 \usepackage{comment}
 \usepackage{listings}
 \usepackage[inkscapepath=build/svg-inkscape]{svg}
+% The arXiv version (make arxiv) ships the Inkscape conversions with placeholder SVGs;
+% never convert them again.
+\ifdefined\ArxivVersion\svgsetup{inkscape=false}\fi
 \usepackage[toc, nogroupskip, nonumberlist, nopostdot, acronyms, shortcuts, translate=babel]{glossaries}
 \usepackage{tabularray}
 \makeatletter
@@ -25,3 +30,35 @@
   \UseTblrLibrary{booktabs}
 }
 \makeatother
+\UseTblrLibrary{diagbox}
+
+% References: write \cref{label}, or \Cref{label} at the start of a sentence. cleveref adds the
+% name ("Sec. 3", "Eq. (4)") from the type of the label; the names below set the style for
+% the whole paper, e.g., {Section}{Sections} instead of {Sec.}{Secs.}. Load after hyperref.
+\usepackage[capitalise,noabbrev]{cleveref}
+% Abbreviated within a sentence (\cref), written out at its start (\Cref).
+\crefname{section}{Sec.}{Secs.}
+\crefname{subsection}{Sec.}{Secs.}
+\crefname{subsubsection}{Sec.}{Secs.}
+\crefname{table}{Tab.}{Tabs.}
+\crefname{figure}{Figure}{Figures}
+\crefname{equation}{Eq.}{Eqs.}
+\Crefname{section}{Section}{Sections}
+\Crefname{subsection}{Section}{Sections}
+\Crefname{subsubsection}{Section}{Sections}
+\Crefname{table}{Table}{Tables}
+\Crefname{figure}{Figure}{Figures}
+\Crefname{equation}{Equation}{Equations}
+\creflabelformat{equation}{#2(#1)#3}
+\newcommand{\crefrangeconjunction}{--}
+% showonlyrefs (mathtools) numbers only referenced equations. Two fixes make it work with cleveref:
+% 1. cleveref stores the label of a display with braces, {Eq:X}, so showonlyrefs looks up MT_r_{Eq:X};
+%    define that name, too, when a label is marked as referenced.
+% 2. showonlyrefs marks only labels of \eqref; \noeqref marks those of \cref and \Cref.
+\makeatletter
+\renewcommand*\MT@newlabel[1]{\global\@namedef{MT_r_#1}{}\global\@namedef{MT_r_{#1}}{}}
+\makeatother
+\NewCommandCopy{\crefOriginal}{\cref}
+\NewCommandCopy{\CrefOriginal}{\Cref}
+\RenewDocumentCommand{\cref}{s m}{\noeqref{#2}\IfBooleanTF{#1}{\crefOriginal*{#2}}{\crefOriginal{#2}}}
+\RenewDocumentCommand{\Cref}{s m}{\noeqref{#2}\IfBooleanTF{#1}{\CrefOriginal*{#2}}{\CrefOriginal{#2}}}

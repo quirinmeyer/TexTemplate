@@ -1,0 +1,19 @@
+% Settings of the arXiv version (make arxiv); loaded from common/commands.tex only if
+% \ArxivVersion is defined.
+%
+% The arXiv version appends the supplemental material to the paper as appendix. If the paper
+% already has an appendix, the second \appendix continues its lettering instead of starting
+% again at A.
+\let\ArxivOriginalAppendix\appendix
+\newif\ifArxivInAppendix
+\def\appendix{%
+  \ifArxivInAppendix
+    \edef\ArxivSectionCount{\the\value{section}}%
+    \ArxivOriginalAppendix
+    \setcounter{section}{\ArxivSectionCount}%
+  \else
+    \ArxivOriginalAppendix
+  \fi
+  \global\ArxivInAppendixtrue}
+% Overrides of the document class, e.g., to remove conference markings, if the template has any.
+\IfFileExists{template/arxiv.tex}{\input{template/arxiv.tex}}{}

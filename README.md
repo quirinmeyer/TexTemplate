@@ -17,6 +17,10 @@ It has the following features:
 - Inkscape style templates for various publications.
 - Works with native Linux, Linux on WSL2, and in virtual machines.
 - Auto downloads templates for non-CTAN packages
+- Optional supplemental material as a second pdf with references into the paper.
+- Consistent references with cleveref ("Sec. 3", "Eq. (4)").
+- Packages for copy-editors and arXiv that build without Inkscape.
+- GitHub workflow that builds the pdfs on every push and publishes them as releases.
 
 # Installation
 
@@ -61,9 +65,10 @@ For example, in a shell type
 ```
 and you will see
 ``` 
-.  ..  eg  acmart  jcgt
+.  ..  acmart  eg  elsearticle  feif  jcgt  tufte
 ```
-In our case, there are four templates, i.e., eg, acmart, and jcgt.
+The default is ```eg```.
+Some templates, e.g., ```eg``` and ```jcgt```, download their class files from the publisher's website into ```download/``` on the first build.
 
 Say you want to submit for jcgt. 
 Open the ```Makefile``` located in the root folder and find the line where the variable ```TEMPLATE_PATH``` is declared and defined.
@@ -95,19 +100,25 @@ Every template should contain the following files:
 - ```FigPreview.tex```: A template document for previewing pdf-latex svgs.
 - ```TabPreview.tex```: A template document for previewing tables.
 
+Optionally, a template contains:
+- ```supplemental.tex```: The preamble of the supplemental material, see "Supplemental Material".
+- ```arxiv.tex```: Overrides of the document class for the arXiv version, e.g., to remove conference headers, see "arXiv".
+
 ## Paper Filename and Blind Submission
 Set the paper filename without the pdf extension in the ```Makefile```.
 Find the line that says
 ```
-MAINFILE					:= Paper1024
+OUTPUT_FILE					:= Paper1024
 ```
 and change ```Paper1024``` to whatever value you want.
+The supplemental pdf and the GitHub workflow pick up the new name automatically.
 
-Further you can set, whether you want a blind submission or not by locating the variable
+Further you can set, whether you want a blind submission or not by changing the first line of ```main.tex``` and ```supplemental.tex```
 ```
-BLIND_SUBMISSION			:= 1
+\newcommand{\BlindSubmission}{1}
 ```
-and set it to ```1``` for a blind submission and ```0``` for non-blind submission.
+to ```1``` for a blind submission and ```0``` for non-blind submission.
+The paper number in the blind author line is set in ```template/main.tex``` and ```template/supplemental.tex```.
 Good templates should properly deal with variable by hiding author information and acknowledgements. 
 But it is in your responsibility to make sure, no author information is revealed if that is necessary. 
 
@@ -182,6 +193,24 @@ This might become necessary in case you get weird errors.
 Place the project files in your WSL home directory and run make from there.
 When placing the project files in a native Windows directory, I observed a performance penality of up to 3x.
 To access the files from Windows, enter ```\\WSL$\``` in the address path of your explorer.
+
+## Supplemental Material
+
+If the root folder contains ```supplemental.tex``` and the selected template contains ```supplemental.tex```, ```make``` also builds ```build/<OUTPUT_FILE>_Supplemental.pdf```.
+Write its content in ```secs/S0supplemental.tex```.
+The supplemental reads the labels of the paper with the ```xr``` package, so ```\cref{Sec:MainPart}``` in the supplemental shows the section number of the paper.
+The supplemental has its own bibliography; keep at least one citation in it, since BibTeX fails on an empty bibliography.
+Write ```\SupplementalName``` where the paper refers to the supplemental material: it reads "supplemental material", or "appendix" in the arXiv version.
+Delete ```supplemental.tex``` if you do not need a supplemental.
+
+## References
+
+Use ```\cref{label}``` for references, or ```\Cref{label}``` at the start of a sentence.
+```cleveref``` adds the name from the type of the label, e.g., "Sec. 3", "Tab. 1", or "Eq. (4)".
+Within a sentence, the names are abbreviated, at the start of a sentence they are written out.
+To change the style for the whole document, edit the ```\crefname``` and ```\Crefname``` lines in ```common/packages.tex```.
+Only referenced equations get a number (```showonlyrefs```); ```\cref``` and ```\eqref``` both count as references.
+To number an equation that is only referenced from elsewhere, e.g., from the supplemental, add ```\noeqref{label}``` after it.
 
 ## Figures
 
@@ -332,13 +361,45 @@ To create that, call
 
 ```make package```
 
-and a folder ```build/package``` and a zip file ```build\package.zip``` with its contents will be created.
+and a folder ```build/package``` and a zip file ```build/package.zip``` with its contents will be created.
+The package contains the sources of the paper and the supplemental, only the SVG figures that the document uses, and their Inkscape conversions.
+Hence, it builds without Inkscape and without ```-shell-escape```.
+If the template downloads its class files, the package contains them, too.
 Make sure that the paper can be built by executing the following commands:
 ```
 cd build/package
 make view
 
 ```
+
+## arXiv
+
+To create a submission for arXiv, call
+
+```make arxiv```
+
+It creates ```build/arxiv.zip``` and a preview ```build/<OUTPUT_FILE>_arXiv.pdf```.
+The arXiv version is a single document: the paper with authors, followed by the supplemental as appendix.
+Since arXiv runs neither BibTeX nor Inkscape, the zip contains the ```.bbl``` and the Inkscape conversions; the SVGs are replaced by placeholders to stay below arXiv's size limit.
+If the template downloads its class files, the zip contains them, but not their sample documents.
+If the template contains ```arxiv.tex```, it is loaded in the arXiv version, e.g., to remove conference headers and footers.
+
+To test the zip as arXiv processes it, call
+
+```make arxiv-test```
+
+It unzips the zip into an empty directory, runs plain ```pdflatex``` without BibTeX, Inkscape, and ```-shell-escape```, and fails on errors, undefined references or citations, conference markings in the pdf, and zips above 50 MB.
+Before submitting, upload the zip to arXiv without submitting it, and check the pdf that arXiv shows.
+
+## Releases and GitHub Workflow
+
+The workflow in ```.github/workflows/build-pdf.yml``` builds the pdfs on every push and attaches them to the workflow run.
+On ```main```, it also publishes them to the rolling release ```latest```.
+To publish a permanent release, run the workflow manually with a tag, or call
+
+```make release RELEASE_TAG=camera-ready```
+
+which requires the GitHub CLI ```gh```.
 
 
 # Style Guide
@@ -358,9 +419,7 @@ make view
 - et al.,
 - e.g.,
 - i.e.,
-- Fig.~\ref{}
-- Tab.~\ref{}
-- Sec.~\ref{}
+- \cref{} instead of Fig.~\ref{}, Tab.~\ref{}, Sec.~\ref{}, and Eq.~\eqref{}
 
 ### Figures
 1. Use vector graphics
@@ -447,6 +506,4 @@ While I maintain this template on a Windows machine, I anticipate that you can u
     - TODO: Create FEIFTemplate.svg
 - TODO Should we add a template for grant applications?
 - TODO Refine Tufte Template
-- TODO Packacking for tempaltes with download parts does not work
-- TODO For packaging, run inkscape latex from command line
 - TODO Make a macro to include graphics and tables.
